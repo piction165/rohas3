@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rohas_login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrapper">
+    <form id="login-form">
+      <h2>Login</h2>
+      <div class="input-field">
+        <input type="text" id="username" required>
+        <label>Enter your ID</label>
+      </div>
+      <div class="input-field">
+        <input type="password" id="password" required>
+        <label>Enter your password</label>
+      </div>
+      <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p>Remember me</p>
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit">Log In</button>
+      <div class="register">
+        <p>Don't have an account? <a href="register.html">Register</a></p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    console.log("✅ JS 실행됨!");
+    
+    // 환경별 API URL 자동 설정
+    const API_BASE_URL = window.location.hostname.includes("localhost") 
+      ? "http://localhost:5000/api" 
+      : "https://YOUR_BACKEND_URL/api"; // 🔴 Render 배포 후, URL 교체 필요
+    
+    // 이전 페이지 기억
+    if (document.referrer && !sessionStorage.getItem("previousPage")) {
+      sessionStorage.setItem("previousPage", document.referrer);
+    }
+    
+    document.getElementById("login-form").addEventListener("submit", async function(event) {
+      event.preventDefault();
+    
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+    
+      console.log("📤 로그인 요청:", { username });
+    
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ username, password })
+        });
+    
+        const data = await response.json();
+        console.log("📥 서버 응답:", data);
+    
+        if (response.ok) {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("username", data.username);
+          localStorage.setItem("role", data.role);
+          alert(`${data.username}님, 로그인 성공!`);
+    
+          if (data.role === "admin") {
+            window.location.href = "admin.html";
+          } else {
+            const previousPage = sessionStorage.getItem("previousPage") || "index.html";
+            sessionStorage.removeItem("previousPage");
+            window.location.href = previousPage;
+          }
+        } else {
+          const errorData = await response.json();
+          console.error("로그인 실패:", error);
+          alert("로그인 실패: " + (data.message || "서버 오류"));
+        }
+      } catch (error) {
+        console.error("❌ 로그인 오류:", error);
+        alert("서버 오류: 로그인 실패");
+      }
+    });
+    </script>
+    
+
+</body>
+</html>
