@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Rohas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <form id="register-form">
+      <h2>Register</h2>
+      <div class="input-field">
+        <input type="email" id="email" required>
+        <label>Enter your Email</label>
+      </div>
+      <div class="input-field">
+        <input type="password" id="password" required>
+        <label>Enter your Password</label>
+      </div>
+      <button type="submit" id="signupButton">Sign Up</button>
+      <div class="login">
+        <p>Already have an account? <a href="index.html">Login</a></p>
+      </div>
+      <p id="message"></p>
+    </form>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Firebase SDK Import
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEczTjZgyj8G7V04_qDm9qK7w1skA2Cq4",
+      authDomain: "rohas-83c91.firebaseapp.com",
+      projectId: "rohas-83c91",
+      storageBucket: "rohas-83c91.appspot.com",
+      messagingSenderId: "462943617468",
+      appId: "1:462943617468:web:75354d18120acd56c22bb9",
+      measurementId: "G-ZKQS36JPJ6"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Handle Registration Form Submission
+    document.getElementById("register-form").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent page reload
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          message.style.color = "green";
+          message.textContent = "Account created successfully! You can now log in.";
+          console.log("User registered:", userCredential.user);
+        })
+        .catch((error) => {
+          message.style.color = "red";
+          message.textContent = "Error: " + error.message;
+          console.error("Error:", error.code, error.message);
+        });
+    });
+  </script>
+
+</body>
+
+</html>
